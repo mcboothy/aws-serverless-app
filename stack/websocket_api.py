@@ -85,7 +85,7 @@ class WebSocketApi(Construct):
             "api-stage", 
             api_id= api.ref,
             deployment_id= deployment.ref,
-            stage_name= "prod",
+            stage_name= "wsprod",
         )
 
         routes = DependencyGroup()

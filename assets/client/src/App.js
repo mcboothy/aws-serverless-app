@@ -1,27 +1,47 @@
-import React from 'react'
-import Stack from '@mui/material/Stack';
-import MainMenu from './components/MainMenu'
-import Map from './components/Map'
-import Navigator from './components/Navigator';
-import Box from '@mui/material/Box'
-//import Grid from '@mui/material/Grid'; // Grid version 1
-import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
+import React, { useState, useEffect } from 'react';
 
-const App = () => {
+import Login from './components/Login/Login';
+import Home from './components/Home/Home';
+import MainHeader from './components/MainHeader/MainHeader';
+import { getWSService } from "./services/WebSocket";
+
+function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+
+    if (isLoggedIn === '1') {
+      console.log("App Login!!!")
+      setIsLoggedIn(true);
+      connect();
+    }
+  }, []);
+
+  const connect = () => {
+    getWSService().sendMessage('connect', {'userId': localStorage.getItem('Username')})
+  }
+
+  const loginHandler = (username) => {
+    localStorage.setItem('isLoggedIn', '1');
+    localStorage.setItem('Username', username);
+    setIsLoggedIn(true);
+    connect();
+  };
+
+  const logoutHandler = (username) => {
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('Username');
+    setIsLoggedIn(false);
+  };
 
   return (
     <React.Fragment>
-      <Grid container>
-        <Grid xs={12}>
-          <MainMenu />
-        </Grid>
-        <Grid xs={3}>
-          <Navigator />
-        </Grid>
-        <Grid xs={9}>
-          <Map />
-        </Grid>
-      </Grid >
+      <MainHeader isAuthenticated={isLoggedIn} onLogout={logoutHandler} />
+      <main>
+        {!isLoggedIn && <Login onLogin={loginHandler} />}
+        {isLoggedIn && <Home onLogout={logoutHandler} />}
+      </main>
     </React.Fragment>
   );
 }

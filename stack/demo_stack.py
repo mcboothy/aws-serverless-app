@@ -32,31 +32,3 @@ class DemoStack(Stack):
         
         Distribution(self, 'distibution').deploy(rest_api, ws_api, bucket)
         
-        # api_url = f'https://{api.rest_api_id}.execute-api.{os.environ["AWS_REGION"]}.amazonaws.com/prod'
-        # key = 'config.js'      
-        
-        # custom_resources.AwsCustomResource(
-        #     self, 
-        #     'website-conf', 
-        #     on_create=custom_resources.AwsSdkCall(
-        #         service="S3",
-        #         action="putObject",
-        #         parameters={
-        #             "Body": f'var BASE_URL = "{api_url}";',
-        #             "Bucket" : bucket.bucket_name,
-        #             "Key": key
-        #         },
-        #         physical_resource_id=custom_resources.PhysicalResourceId.of(key)
-        #     ),
-        #     on_delete=custom_resources.AwsSdkCall(
-        #         service="S3",
-        #         action="deleteObject",
-        #         parameters={
-        #             "Bucket" : bucket.bucket_name,
-        #             "Key": key
-        #         },
-        #     ),
-        #     policy=custom_resources.AwsCustomResourcePolicy.from_sdk_calls(
-        #         resources=[f'{bucket.bucket_arn}/{key}']
-        #     )
-        # )        
