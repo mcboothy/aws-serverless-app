@@ -1,0 +1,1 @@
+cdk destroy --all --force --require-approval never -c deploy=False

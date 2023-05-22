@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "./assets/data_generator",
+        "./tests/utils"
+    ]
+}

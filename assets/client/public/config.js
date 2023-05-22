@@ -1,0 +1,1 @@
+var BASE_URL = "https://r8jtt3uht6.execute-api.eu-west-2.amazonaws.com/prod";
