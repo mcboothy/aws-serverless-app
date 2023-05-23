@@ -27,7 +27,7 @@ class API(Construct):
         role = Util.create_role(
             self,
             name= Util.generate_object_name("api-role"),
-            principal="lambda.amazonaws.com",
+            principal=iam.ServicePrincipal("lambda.amazonaws.com"),
             managed_policies=[
                 iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole"),
             ]

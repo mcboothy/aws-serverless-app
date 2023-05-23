@@ -31,11 +31,23 @@ class WebSocketApi(Construct):
         role = Util.create_role(
             self,
             name= Util.generate_object_name("api-role"),
-            principal="lambda.amazonaws.com",
+            principal=iam.CompositePrincipal(
+                iam.ServicePrincipal("lambda.amazonaws.com"),
+                iam.ServicePrincipal("apigateway.amazonaws.com")),
             managed_policies=[
-                iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole"),
-                iam.ManagedPolicy.from_aws_managed_policy_name("AmazonAPIGatewayAdministrator"),                
-                iam.ManagedPolicy.from_aws_managed_policy_name("AmazonDynamoDBFullAccess"),               
+                iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole"),           
+                iam.ManagedPolicy.from_aws_managed_policy_name("AmazonDynamoDBFullAccess"),                   
+                iam.ManagedPolicy.from_aws_managed_policy_name("AWSLambdaRole"),     
+            ],
+            statements=[
+                {
+                    "Effect": "Allow",
+                    "Action": [
+                        "execute-api:*",
+                        "apigateway:*"
+                    ],
+                    "Resource": "*"
+                }
             ]
         )    
                                 
@@ -44,25 +56,19 @@ class WebSocketApi(Construct):
             "websockets-api", 
             name= Util.generate_object_name("websocket-api"),
             protocol_type= "WEBSOCKET",
-            route_selection_expression= "$request.body.message"
+            route_selection_expression= "$request.body.route_key"
         );                
         
         connections_table = dynamodb.Table(
             self, 
             'WSconnections',
             table_name=Util.generate_object_name("ws-connections"),
-            partition_key=dynamodb.Attribute(name= 'userId', type= dynamodb.AttributeType.STRING),
-            sort_key=dynamodb.Attribute(name= 'connectionId', type= dynamodb.AttributeType.STRING),
+            partition_key=dynamodb.Attribute(name= 'connectionId', type= dynamodb.AttributeType.STRING),
             billing_mode= dynamodb.BillingMode.PAY_PER_REQUEST,
             stream= dynamodb.StreamViewType.NEW_IMAGE,
             removal_policy=RemovalPolicy.DESTROY,
         )
-        
-        connections_table.add_global_secondary_index(
-            index_name='connectionId', 
-            partition_key=dynamodb.Attribute(name= 'connectionId', type= dynamodb.AttributeType.STRING)
-        ) 
-        
+
         env = {                
             "LOG_GROUP_NAME": log_group.log_group_name,
             "LOG_STREAM_NAME": log_stream.log_stream_name,

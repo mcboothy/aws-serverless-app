@@ -60,7 +60,7 @@ class Util:
             role= Util.create_role(
                 construct,
                 name= f"{name}-role",
-                principal="lambda.amazonaws.com",
+                principal=iam.ServicePrincipal("lambda.amazonaws.com"),
                 managed_policies=managed_policies
             ),
             code=_lambda.Code.from_asset(path),
@@ -71,14 +71,14 @@ class Util:
     def create_role(
         construct: Construct, 
         name: str, 
-        principal: str, 
+        principal: iam.IPrincipal, 
         statements: List[Dict] = None, 
         managed_policies: List = None
     ) -> iam.Role:         
         role = iam.Role(
             construct, 
             f'{name}-role',
-            assumed_by=iam.ServicePrincipal(principal),
+            assumed_by=principal
         )
             
         if managed_policies:

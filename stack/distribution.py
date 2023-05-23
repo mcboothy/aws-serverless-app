@@ -37,8 +37,22 @@ class Distribution(Construct):
                 ),
                 "/wsprod/*": cloudfront.BehaviorOptions(
                     allowed_methods=cloudfront.AllowedMethods.ALLOW_ALL,
+                    origin_request_policy=cloudfront.OriginRequestPolicy(
+                        self, 
+                        "webSocketPolicy", 
+                        origin_request_policy_name= "webSocketPolicy",
+                        comment= "A default WebSocket policy",
+                        cookie_behavior= cloudfront.OriginRequestCookieBehavior.none(),
+                        header_behavior= cloudfront.OriginRequestHeaderBehavior.allow_list(
+                            "Sec-WebSocket-Key", 
+                            "Sec-WebSocket-Version",
+                            "Sec-WebSocket-Protocol", 
+                            "Sec-WebSocket-Accept"
+                        ),
+                        query_string_behavior= cloudfront.OriginRequestQueryStringBehavior.none(),
+                    ),
                     origin=cloudfront_origins.HttpOrigin(
-                        domain_name=f"{ws_api.ref}.execute-api.{Stack.of(self).region}.amazonaws.com"
+                        domain_name=f"{ws_api.ref}.execute-api.{Stack.of(self).region}.amazonaws.com",
                     )
                 )                
             }

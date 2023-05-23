@@ -6,7 +6,7 @@ from datetime import datetime
  
 group_name = os.environ["LOG_GROUP_NAME"]
 stream_name = os.environ["LOG_STREAM_NAME"]
-table_name = os.environ["DB_TABLE_NAME"]
+table_name = os.environ["TABLE_NAME"]
 
 resource = boto3.resource('dynamodb',region_name=os.environ["AWS_REGION"])
 table = resource.Table(table_name)   
@@ -23,15 +23,13 @@ def lambda_handler(event, context):
             }
         ]
     )
-    
-    body = json.loads(event["body"])     
-    table.delete_item(Key={"userId": body["user"]})
+
+    table.delete_item(Key={"connectionId": event["requestContext"]['connectionId']})
     
     return {
         "isBase64Encoded": False,
         "statusCode": "200",
         "headers": {
             "Content-Type" : "application/json",
-        },        
-        "body": json.dumps({"message": "Success"})
+        }
     }        

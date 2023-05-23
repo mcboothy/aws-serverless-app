@@ -1,7 +1,5 @@
 import WebSocket from 'isomorphic-ws';
 
-const WS_URL = "/wsprod";
-
 let WSService = null;
 
 class WebSocketService {
@@ -16,11 +14,23 @@ class WebSocketService {
    *  Set up WebSocket connection for a new user and
    *  basic listeners to handle events
    */
-  initSocket = () => {    
-    this.websocket = new WebSocket(WS_URL);
+  initSocket = (user) => {    
+    var loc = window.location, url;
+    if (loc.protocol === "https:") {
+      url = "wss:";
+    } else {
+      url = "ws:";
+    }
+    url += "//" + loc.host;
+    url += loc.pathname + "wsprod/";    
+    this.websocket = new WebSocket(url);
     this.websocket.onopen = this.onConnOpen;
     this.websocket.onmessage = this.onMessage;
     this.websocket.onclose = this.onConnClose;
+  }
+
+  close = () => {
+    this.websocket.close();
   }
 
   /**
@@ -53,8 +63,8 @@ class WebSocketService {
   sendMessage = (routeKey, message) => {    
     if(this.websocket && this.isOpen){
       this.websocket.send(JSON.stringify({
-        rcaction: routeKey,
-        rcmsg: JSON.stringify(message)
+        route_key: routeKey,
+        data: JSON.stringify(message)
       }));
     }else{      
       console.log(`Websocket connection not found!!`);
@@ -64,16 +74,14 @@ class WebSocketService {
   /**
    *  Used by application to register different listeners for 
    *  different message types [To be used later]
-   *  @param room Room name
    *  @param type Message type ['all', 'pm']
    *  @param listener Function to handle message type
    */
-  addMessageListener = (room, type, listener) => {    
-    if (!type || !room || typeof listener !== 'function') {
+  addMessageListener = (type, listener) => {    
+    if (!type ||typeof listener !== 'function') {
       return;
     }
     this.messageListeners.push({
-      room,
       type,
       listener
     });
@@ -85,6 +93,7 @@ class WebSocketService {
    * @param data Message body received from WebSocket 
    */
   onMessage = (data) => {
+    console.log(data)
     if (data) {
       const message = JSON.parse(data.data);    
       const typeListener = this.messageListeners.find(listener => listener.type === message.type);

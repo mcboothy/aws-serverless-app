@@ -1,14 +1,16 @@
-import React from 'react';
-
+import React, { useContext } from 'react';
+import ChatContext from '../../store/chat-context';
 import classes from './Navigation.module.css';
 
 const Navigation = (props) => {
+  const ctx = useContext(ChatContext);
+
   return (
     <nav className={classes.nav}>
       <ul>
-        {props.isLoggedIn && (
+        {ctx.isConnected && (
           <li>
-            <button onClick={props.onLogout}>Logout</button>
+            <button onClick={ctx.onDisconnect}>Logout</button>
           </li>
         )}
       </ul>

@@ -1,8 +1,9 @@
-import React, { useReducer } from 'react';
+import React, { useReducer, useContext } from 'react';
 
 import Card from '../UI/Card/Card';
 import classes from './Login.module.css';
 import Button from '../UI/Button/Button';
+import ChatContext from '../../store/chat-context';
 
 const stateReducer = (state, action) => {
   let newState = {...state}
@@ -12,11 +13,13 @@ const stateReducer = (state, action) => {
     break;
   }
 
-  newState.formIsValid = newState.username.trim().length > 6 
+  newState.formIsValid = newState.username.trim().length > 4
   return newState
 };
 
 const Login = (props) => {
+  const ctx = useContext(ChatContext);
+
   const [state, dispatchState] = useReducer(stateReducer, {
     username: '',
     formIsValid: false,
@@ -32,7 +35,7 @@ const Login = (props) => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    props.onLogin(state.username);
+    ctx.onConnect(state.username);
   };
 
   return (
@@ -40,14 +43,14 @@ const Login = (props) => {
       <form onSubmit={submitHandler}>
         <div
           className={`${classes.control} ${
-            state.emailIsValid === false ? classes.invalid : ''
+            state.formIsValid === false ? classes.invalid : ''
           }`}
         >
           <label htmlFor="user">Name</label>
           <input
             type="text"
             id="user"
-            value={state.enteredEmail}
+            value={state.username}
             onChange={userChangeHandler}
             onBlur={validateUserHandler}
           />
