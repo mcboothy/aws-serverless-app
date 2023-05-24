@@ -25,20 +25,20 @@ def lambda_handler(event, context):
     )
     
     body = json.loads(event["body"])     
-    response = table.scan(ProjectionExpression='connectionId')    
+    data = json.loads(body["data"])  
     
     stage = event['requestContext']['stage']
     api_id = event['requestContext']['apiId']
     region = os.environ["AWS_REGION"]
-    
-    domain = f'{api_id}.execute-api.{region}.amazonaws.com'
-    api_client = boto3.client('apigatewaymanagementapi', endpoint_url=f'https://{domain}/{stage}')
-    
-    for item in response["Items"]:
-        response = api_client.post_to_connection(
+    endpoint = f'https://{api_id}.execute-api.{region}.amazonaws.com/{stage}'
+    api_client = boto3.client('apigatewaymanagementapi', endpoint_url=endpoint)
+
+    for item in table.scan(ProjectionExpression='connectionId')["Items"]:
+        api_client.post_to_connection(
             Data=json.dumps({
                 'type': 'message', 
-                'message': body["data"]
+                'user': data["user"],
+                'message': data["message"]
             }),
             ConnectionId=item['connectionId']
         )        

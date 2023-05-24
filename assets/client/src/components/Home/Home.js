@@ -11,7 +11,7 @@ const Home = (props) => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    ctx.sendMessage(inputElement.value);
+    ctx.sendMessage(inputElement.current.value);
   };
 
   return (
@@ -36,15 +36,15 @@ const Home = (props) => {
     </Card>
     <ul>
       {ctx.messages.map(message => {
-        return <Card>
-          <div style={{position: 'relative', width: '100%', padding: '1rem'}}>
-            <div style={{margin: '0.35rem'}}>
+        return <Card className={`${classes.message} ${
+            message.user === ctx.username ? classes.user : ''
+          }`}>
+            <span>
               {message.user}
-            </div>
-            <div style={{margin: '0.35rem'}}>
+            </span>
+            <p>
               {message.message}
-            </div>            
-          </div>          
+            </p>         
         </Card>
       })}
     </ul>

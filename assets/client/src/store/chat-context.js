@@ -4,6 +4,7 @@ import {getWSService} from '../services/WebSocket'
 const ChatContext = React.createContext({
     isConnected: false,
     messages: [],
+    username: '',
     onConnect: (user) => { },
     onDisconnect: () => { },
     sendMessage: (message) => {}
@@ -12,18 +13,19 @@ const ChatContext = React.createContext({
 const wsService = getWSService()
 
 export const ChatContextProvider = (props) => {
-    const [isConnected, setIsConnected] = useState(false);
-    const [messages, setMessages] = useState([]);
+    const [isConnected, setIsConnected] = useState(localStorage.getItem('isLoggedIn') === '1');
+    const [username, setUsername] = useState(localStorage.getItem('Username'));
+    const [messages, setMessages] = useState([{user: "John", message: "Hello buddy"},
+     {user: "Russell", message: "Wassup"},
+     {user: "John", message: "What ya doing?"},]);
 
     useEffect(() => {
         const isLoggedIn = localStorage.getItem('isLoggedIn');
 
         if (isLoggedIn === '1') {
-            setIsConnected(true);
             connect();
         }
     }, []);
-
 
     // {user: "John", message: "Hello buddy"},
     // {user: "Dave", message: "Wassup"},
@@ -32,7 +34,7 @@ export const ChatContextProvider = (props) => {
     const connect = () => {
         wsService.initSocket()
         wsService.addMessageListener('message', (message) => {
-            setMessages(prevMessages => [...prevMessages, message])
+            setMessages(prevMessages => [...prevMessages, {user: message.user, message: message.message}])
         })
     }
 
@@ -42,7 +44,7 @@ export const ChatContextProvider = (props) => {
 
     const sendMessage = (message) => {
         wsService.sendMessage('default', {
-            'user' : localStorage.getItem('Username'),
+            'user' : username,
             'message': message
         })
     }
@@ -51,6 +53,7 @@ export const ChatContextProvider = (props) => {
         localStorage.setItem('isLoggedIn', '1');
         localStorage.setItem('Username', username);
         setIsConnected(true);
+        setUsername(username)
         connect();
     };
 
@@ -58,6 +61,7 @@ export const ChatContextProvider = (props) => {
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('Username');
         setIsConnected(false);
+        setUsername('');
         disconnect();
     };
 
@@ -66,6 +70,7 @@ export const ChatContextProvider = (props) => {
             value={{
                 isConnected: isConnected,
                 messages: messages,
+                username: username,
                 sendMessage: sendMessage,
                 onConnect: connectHandler,
                 onDisconnect: disconnectHandler

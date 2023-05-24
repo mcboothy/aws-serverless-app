@@ -92,8 +92,7 @@ class WebSocketService {
    * For now it simply returns the parsed message body
    * @param data Message body received from WebSocket 
    */
-  onMessage = (data) => {
-    console.log(data)
+  onMessage = (data) => {    
     if (data) {
       const message = JSON.parse(data.data);    
       const typeListener = this.messageListeners.find(listener => listener.type === message.type);
@@ -109,7 +108,6 @@ class WebSocketService {
   static initWSService() {    
     if (!WSService) {      
       WSService = new WebSocketService();
-      WSService.initSocket();
       return WSService;
     }
     

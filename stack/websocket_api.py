@@ -11,6 +11,7 @@ from aws_cdk import (
     aws_dynamodb as dynamodb,
     RemovalPolicy,
     Stack,
+    Duration
 )
 
 
@@ -120,6 +121,7 @@ class WebSocketApi(Construct):
             role= role,
             code=_lambda.Code.from_asset(handler_path),
             environment=env_vars,
+            timeout=Duration.minutes(5)
         )        
                 
         intergration = apigwv2.CfnIntegration(
