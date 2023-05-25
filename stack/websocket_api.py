@@ -38,7 +38,7 @@ class WebSocketApi(Construct):
             managed_policies=[
                 iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole"),           
                 iam.ManagedPolicy.from_aws_managed_policy_name("AmazonDynamoDBFullAccess"),                   
-                iam.ManagedPolicy.from_aws_managed_policy_name("AWSLambdaRole"),     
+                iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaRole"),     
             ],
             statements=[
                 {
