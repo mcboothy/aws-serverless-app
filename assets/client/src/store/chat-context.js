@@ -15,9 +15,7 @@ const wsService = getWSService()
 export const ChatContextProvider = (props) => {
     const [isConnected, setIsConnected] = useState(localStorage.getItem('isLoggedIn') === '1');
     const [username, setUsername] = useState(localStorage.getItem('Username'));
-    const [messages, setMessages] = useState([{user: "John", message: "Hello buddy"},
-     {user: "Russell", message: "Wassup"},
-     {user: "John", message: "What ya doing?"},]);
+    const [messages, setMessages] = useState([]);
 
     useEffect(() => {
         const isLoggedIn = localStorage.getItem('isLoggedIn');
@@ -26,10 +24,6 @@ export const ChatContextProvider = (props) => {
             connect();
         }
     }, []);
-
-    // {user: "John", message: "Hello buddy"},
-    // {user: "Dave", message: "Wassup"},
-    // {user: "John", message: "What ya doing?"},
     
     const connect = () => {
         wsService.initSocket()

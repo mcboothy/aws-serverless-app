@@ -127,7 +127,7 @@ class WebSocketApi(Construct):
         intergration = apigwv2.CfnIntegration(
             self, 
             f"{name}-intergration", 
-            api_id= api.attr_api_id,
+            api_id= api.ref,
             integration_type= "AWS_PROXY",
             integration_uri= f"arn:aws:apigateway:{Stack.of(self).region}:lambda:path/2015-03-31/functions/{function.function_arn}/invocations",
             credentials_arn= role.role_arn
@@ -136,7 +136,7 @@ class WebSocketApi(Construct):
         return apigwv2.CfnRoute(
             self, 
             f"{name}-route", 
-            api_id= api.attr_api_id,
+            api_id= api.ref,
             route_key= f"${name}",
             authorization_type= "NONE",
             api_key_required= False,
