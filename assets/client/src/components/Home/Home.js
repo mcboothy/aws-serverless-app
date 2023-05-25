@@ -12,6 +12,7 @@ const Home = (props) => {
   const submitHandler = (event) => {
     event.preventDefault();
     ctx.sendMessage(inputElement.current.value);
+    inputElement.current.value = "";
   };
 
   return (
