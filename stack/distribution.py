@@ -1,6 +1,7 @@
 import os
 from constructs import Construct
 from typing import Dict
+from stack.util import Util
 from aws_cdk import (
     Fn,
     aws_s3 as s3,
@@ -40,7 +41,7 @@ class Distribution(Construct):
                     origin_request_policy=cloudfront.OriginRequestPolicy(
                         self, 
                         "webSocketPolicy", 
-                        origin_request_policy_name= "webSocketPolicy",
+                        origin_request_policy_name= Util.generate_object_name("websocket-policy"),
                         comment= "A default WebSocket policy",
                         cookie_behavior= cloudfront.OriginRequestCookieBehavior.none(),
                         header_behavior= cloudfront.OriginRequestHeaderBehavior.allow_list(
